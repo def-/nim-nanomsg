@@ -1,4 +1,5 @@
-#{.deadcodeElim: on.}
+{.deadcodeElim: on.}
+
 when defined(windows):
   const
     libnanomsg* = "libnanomsg.dll"
@@ -8,6 +9,9 @@ elif defined(macosx):
 else:
   const
     libnanomsg* = "libnanomsg.so"
+
+# c2nim --skipcomments --prefix:nn_ --prefix:NN_ --dynlib:libnanomsg --cdecl
+# nn.h
 
 const 
   HAUSNUMERO* = 156384712
@@ -216,7 +220,62 @@ proc poll*(fds: ptr pollfd; nfds: cint; timeout: cint): cint {.cdecl,
 proc device*(s1: cint; s2: cint): cint {.cdecl, importc: "nn_device", 
     dynlib: libnanomsg.}
 
+# pipeline.h
+
 const 
   PROTO_PIPELINE* = 5
   PUSH* = (PROTO_PIPELINE * 16 + 0)
   PULL* = (PROTO_PIPELINE * 16 + 1)
+
+# bus.h
+
+const 
+  PROTO_BUS* = 7
+  BUS* = (PROTO_BUS * 16 + 0)
+
+# inproc.h
+
+const 
+  INPROC* = - 1
+
+# ipc.h
+
+const 
+  IPC* = - 2
+
+# pair.h
+
+const 
+  PROTO_PAIR* = 1
+  PAIR* = (PROTO_PAIR * 16 + 0)
+
+# survey.h
+
+const 
+  PROTO_SURVEY* = 6
+  SURVEYOR* = (PROTO_SURVEY * 16 + 0)
+  RESPONDENT* = (PROTO_SURVEY * 16 + 1)
+  SURVEYOR_DEADLINE* = 1
+
+# pubsub.h
+
+const 
+  PROTO_PUBSUB* = 2
+  PUB* = (PROTO_PUBSUB * 16 + 0)
+  SUB* = (PROTO_PUBSUB * 16 + 1)
+  SUB_SUBSCRIBE* = 1
+  SUB_UNSUBSCRIBE* = 2
+
+# reqrep.h
+
+const 
+  PROTO_REQREP* = 3
+  REQ* = (PROTO_REQREP * 16 + 0)
+  REP* = (PROTO_REQREP * 16 + 1)
+  REQ_RESEND_IVL* = 1
+
+# tcp.h
+
+const 
+  TCP* = - 3
+  TCP_NODELAY* = 1
