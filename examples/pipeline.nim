@@ -1,10 +1,20 @@
 # http://tim.dysinger.net/posts/2013-09-16-getting-started-with-nanomsg.html
+#
+# Call like
+# ./pipeline node0 tcp://127.0.0.1:25000
+# ./pipeline node1 tcp://127.0.0.1:25000 "Hello there"
+#
+# or
+#
+# ./pipeline node0 ipc:///tmp/pipeline.ipc
+# ./pipeline node1 ipc:///tmp/pipeline.ipc "Hello there"
 import os, nanomsg
 
 proc node0(url: string) =
   var sock = socket(AF_SP, PULL)
   assert sock >= 0
-  discard bind(sock, url)
+  let res = bindd(sock, url)
+  assert res >= 0
   while true:
     var buf: cstring
     let bytes = recv(sock, addr buf, MSG, 0)
@@ -15,7 +25,8 @@ proc node0(url: string) =
 proc node1(url, msg: string) =
   var sock = socket(AF_SP, PUSH)
   assert sock >= 0
-  discard connect(sock, url)
+  let res = connect(sock, url)
+  assert res >= 0
   echo "NODE1: SENDING \"",msg,"\""
   let bytes = send(sock, msg.cstring, msg.len + 1, 0)
   assert bytes == msg.len + 1

@@ -187,8 +187,7 @@ proc setsockopt*(s: cint; level: cint; option: cint; optval: pointer;
 proc getsockopt*(s: cint; level: cint; option: cint; optval: pointer; 
                  optvallen: ptr csize): cint {.cdecl, importc: "nn_getsockopt", 
     dynlib: libnanomsg.}
-# TODO: What to do with bind?
-proc `bind`*(s: cint; add: cstring): cint {.cdecl, importc: "nn_bind", 
+proc bindd*(s: cint; add: cstring): cint {.cdecl, importc: "nn_bind", 
     dynlib: libnanomsg.}
 proc connect*(s: cint; add: cstring): cint {.cdecl, importc: "nn_connect", 
     dynlib: libnanomsg.}
