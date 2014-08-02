@@ -11,26 +11,26 @@
 import os, nanomsg
 
 proc node0(url: string) =
-  var sock = socket(AF_SP, PULL)
-  assert sock >= 0
-  let res = bindd(sock, url)
+  var s = socket(AF_SP, PULL)
+  assert s >= 0
+  let res = s.bindd url
   assert res >= 0
   while true:
     var buf: cstring
-    let bytes = recv(sock, addr buf, MSG, 0)
+    let bytes = s.recv(addr buf, MSG, 0)
     assert bytes >= 0
     echo "NODE0: RECEIVED \"",buf,"\""
     discard freemsg buf
 
 proc node1(url, msg: string) =
-  var sock = socket(AF_SP, PUSH)
-  assert sock >= 0
-  let res = connect(sock, url)
+  var s = socket(AF_SP, PUSH)
+  assert s >= 0
+  let res = s.connect url
   assert res >= 0
   echo "NODE1: SENDING \"",msg,"\""
-  let bytes = send(sock, msg.cstring, msg.len + 1, 0)
+  let bytes = s.send(msg.cstring, msg.len + 1, 0)
   assert bytes == msg.len + 1
-  discard shutdown(sock, 0)
+  discard s.shutdown 0
 
 if paramStr(1) == "node0":
   node0 paramStr(2)

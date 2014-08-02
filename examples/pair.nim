@@ -10,42 +10,41 @@
 # ./pair node1 tcp://127.0.0.1:25000
 import os, nanomsg
 
-proc sendName(sock; name: var string) =
-  echo name,": SENDING \"",name,"\""
-  discard send(sock, name.cstring, name.len + 1, 0)
+proc sendMsg(s, msg) =
+  echo "SENDING \"",msg,"\""
+  let bytes = s.send(msg.cstring, msg.len + 1, 0)
+  assert bytes == msg.len + 1
 
-proc recvName(sock, name) =
+proc recvMsg(s) =
   var buf: cstring
-  let bytes = recv(sock, addr buf, MSG, 0)
+  let bytes = s.recv(addr buf, MSG, 0)
   if bytes > 0:
-    echo name,": RECEIVED \"",buf,"\""
+    echo "RECEIVED \"",buf,"\""
     discard freemsg buf
 
-proc sendRecv(sock; name: var string) =
+proc sendRecv(s, msg) =
   var to: cint = 100
-  discard setSockOpt(sock, SOL_SOCKET, RCVTIMEO, addr to, sizeof(to))
+  discard s.setSockOpt(SOL_SOCKET, RCVTIMEO, addr to, sizeof to)
   while true:
-    recvName(sock, name)
+    s.recvMsg
     sleep 1000
-    sendName(sock, name)
+    s.sendMsg msg
 
 proc node0(url: string) =
-  var sock = socket(AF_SP, nanomsg.PAIR)
-  assert sock >= 0
-  let res = bindd(sock, url)
+  var s = socket(AF_SP, nanomsg.PAIR)
+  assert s >= 0
+  let res = s.bindd url
   assert res >= 0
-  var name = "node0"
-  sendRecv(sock, name)
-  discard shutdown(sock, 0)
+  s.sendRecv "node0"
+  discard s.shutdown 0
 
 proc node1(url: string) =
-  var sock = socket(AF_SP, nanomsg.PAIR)
-  assert sock >= 0
-  let res = connect(sock, url)
+  var s = socket(AF_SP, nanomsg.PAIR)
+  assert s >= 0
+  let res = s.connect url
   assert res >= 0
-  var name = "node1"
-  sendRecv(sock, name)
-  discard shutdown(sock, 0)
+  s.sendRecv "node1"
+  discard s.shutdown 0
 
 if paramStr(1) == "node0":
   node0 paramStr(2)
