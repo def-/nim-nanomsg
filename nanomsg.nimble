@@ -1,11 +1,12 @@
-[Package]
-name: "nanomsg"
-version: "0.1"
-author: "Dennis Felsing"
-description: "Wrapper for nanomsg, a socket library that provides several common communication patterns. It aims to make the networking layer fast, scalable, and easy to use."
-license: "MIT"
+# Package
 
-srcDir: "src"
+version     = "0.1"
+author      = "Dennis Felsing"
+description = "Wrapper for nanomsg, a socket library that provides several common communication patterns. It aims to make the networking layer fast, scalable, and easy to use."
+license     = "MIT"
 
-[Deps]
-requires: "nimrod > 0.9.4"
+srcDir      = "src"
+
+# Dependencies
+
+requires "nim >= 0.10.0"
