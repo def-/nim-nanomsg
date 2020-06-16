@@ -13,7 +13,7 @@ else:
 # c2nim --skipcomments --prefix:nn_ --prefix:NN_ --dynlib:libnanomsg --cdecl
 # nn.h
 
-const 
+const
   HAUSNUMERO* = 156384712
   ENOTSUP* = (HAUSNUMERO + 1)
   EPROTONOSUPPORT* = (HAUSNUMERO + 2)
@@ -49,13 +49,13 @@ const
 
 proc errno*(): cint {.cdecl, importc: "nn_errno", dynlib: libnanomsg.}
 
-proc strerror*(errnum: cint): cstring {.cdecl, importc: "nn_strerror", 
+proc strerror*(errnum: cint): cstring {.cdecl, importc: "nn_strerror",
                                         dynlib: libnanomsg.}
 
-proc symbol*(i: cint; value: ptr cint): cstring {.cdecl, importc: "nn_symbol", 
+proc symbol*(i: cint; value: ptr cint): cstring {.cdecl, importc: "nn_symbol",
     dynlib: libnanomsg.}
 
-const 
+const
   NS_NAMESPACE* = 0
   NS_VERSION* = 1
   NS_DOMAIN* = 2
@@ -71,13 +71,13 @@ const
   NS_LIMIT* = 12
 
 
-const 
+const
   TYPE_NONE* = 0
   TYPE_INT* = 1
   TYPE_STR* = 2
 
 
-const 
+const
   UNIT_NONE* = 0
   UNIT_BYTES* = 1
   UNIT_MILLISECONDS* = 2
@@ -85,8 +85,8 @@ const
   UNIT_BOOLEAN* = 4
 
 
-type 
-  symbol_properties* = object 
+type
+  symbol_properties* = object
     value*: cint
     name*: cstring
     ns*: cint
@@ -102,62 +102,62 @@ proc term*() {.cdecl, importc: "nn_term", dynlib: libnanomsg.}
 
 const MSG* = -1
 
-proc allocmsg*(size: csize; typ: cint): pointer {.cdecl, 
+proc allocmsg*(size: csize; typ: cint): pointer {.cdecl,
     importc: "nn_allocmsg", dynlib: libnanomsg.}
-proc reallocmsg*(msg: pointer; size: csize): pointer {.cdecl, 
+proc reallocmsg*(msg: pointer; size: csize): pointer {.cdecl,
     importc: "nn_reallocmsg", dynlib: libnanomsg.}
-proc freemsg*(msg: pointer): cint {.cdecl, importc: "nn_freemsg", 
+proc freemsg*(msg: pointer): cint {.cdecl, importc: "nn_freemsg",
                                     dynlib: libnanomsg.}
 
-type 
-  iovec* = object 
+type
+  iovec* = object
     iov_base*: pointer
     iov_len*: csize
 
-  msghdr* = object 
+  msghdr* = object
     msg_iov*: ptr iovec
     msg_iovlen*: cint
     msg_control*: pointer
     msg_controllen*: csize
 
-  cmsghdr* = object 
+  cmsghdr* = object
     cmsg_len*: csize
     cmsg_level*: cint
     cmsg_type*: cint
 
 
 
-template CMSG_FIRSTHDR*(mhdr: expr): expr = 
+template CMSG_FIRSTHDR*(mhdr: untyped): untyped =
   (if (mhdr).msg_controllen >= sizeof(cmsghdr): cast[ptr cmsghdr]((mhdr).msg_control) else: cast[ptr cmsghdr](nil))
 
-template CMSG_NXTHDR*(mhdr, cmsg: expr): expr = 
+template CMSG_NXTHDR*(mhdr, cmsg: untyped): untyped =
   cmsg_nexthdr(cast[ptr msghdr]((mhdr)), cast[ptr cmsghdr]((cmsg)))
 
-template CMSG_DATA*(cmsg: expr): expr = 
+template CMSG_DATA*(cmsg: untyped): untyped =
   (cast[ptr cuchar](((cast[ptr cmsghdr]((cmsg))) + 1)))
 
 
-template CMSG_SPACE*(len: expr): expr = 
+template CMSG_SPACE*(len: untyped): untyped =
   (CMSG_ALIGN(len) + CMSG_ALIGN(sizeof(cmsghdr)))
 
-template CMSG_LEN*(len: expr): expr = 
+template CMSG_LEN*(len: untyped): untyped =
   (CMSG_ALIGN(sizeof(cmsghdr)) + (len))
 
 
-const 
+const
   AF_SP* = 1
   AF_SP_RAW* = 2
 
 
-const 
+const
   SOCKADDR_MAX* = 128
 
 
-const 
+const
   SOL_SOCKET* = 0
 
 
-const 
+const
   LINGER* = 1
   SNDBUF* = 2
   RCVBUF* = 3
@@ -175,82 +175,82 @@ const
   SOCKET_NAME* = 15
 
 
-const 
+const
   DONTWAIT* = 1
 
-proc socket*(domain: cint; protocol: cint): cint {.cdecl, importc: "nn_socket", 
+proc socket*(domain: cint; protocol: cint): cint {.cdecl, importc: "nn_socket",
     dynlib: libnanomsg.}
 proc close*(s: cint): cint {.cdecl, importc: "nn_close", dynlib: libnanomsg.}
-proc setsockopt*(s: cint; level: cint; option: cint; optval: pointer; 
-                 optvallen: csize): cint {.cdecl, importc: "nn_setsockopt", 
+proc setsockopt*(s: cint; level: cint; option: cint; optval: pointer;
+                 optvallen: csize): cint {.cdecl, importc: "nn_setsockopt",
     dynlib: libnanomsg.}
-proc getsockopt*(s: cint; level: cint; option: cint; optval: pointer; 
-                 optvallen: ptr csize): cint {.cdecl, importc: "nn_getsockopt", 
+proc getsockopt*(s: cint; level: cint; option: cint; optval: pointer;
+                 optvallen: ptr csize): cint {.cdecl, importc: "nn_getsockopt",
     dynlib: libnanomsg.}
-proc bindd*(s: cint; add: cstring): cint {.cdecl, importc: "nn_bind", 
+proc bindd*(s: cint; add: cstring): cint {.cdecl, importc: "nn_bind",
     dynlib: libnanomsg.}
-proc connect*(s: cint; add: cstring): cint {.cdecl, importc: "nn_connect", 
+proc connect*(s: cint; add: cstring): cint {.cdecl, importc: "nn_connect",
     dynlib: libnanomsg.}
-proc shutdown*(s: cint; how: cint): cint {.cdecl, importc: "nn_shutdown", 
+proc shutdown*(s: cint; how: cint): cint {.cdecl, importc: "nn_shutdown",
     dynlib: libnanomsg.}
-proc send*(s: cint; buf: pointer; len: csize; flags: cint): cint {.cdecl, 
+proc send*(s: cint; buf: pointer; len: csize; flags: cint): cint {.cdecl,
     importc: "nn_send", dynlib: libnanomsg.}
-proc recv*(s: cint; buf: pointer; len: csize; flags: cint): cint {.cdecl, 
+proc recv*(s: cint; buf: pointer; len: csize; flags: cint): cint {.cdecl,
     importc: "nn_recv", dynlib: libnanomsg.}
-proc sendmsg*(s: cint; msghdr: ptr msghdr; flags: cint): cint {.cdecl, 
+proc sendmsg*(s: cint; msghdr: ptr msghdr; flags: cint): cint {.cdecl,
     importc: "nn_sendmsg", dynlib: libnanomsg.}
-proc recvmsg*(s: cint; msghdr: ptr msghdr; flags: cint): cint {.cdecl, 
+proc recvmsg*(s: cint; msghdr: ptr msghdr; flags: cint): cint {.cdecl,
     importc: "nn_recvmsg", dynlib: libnanomsg.}
 
-const 
+const
   POLLIN* = 1
   POLLOUT* = 2
 
-type 
-  pollfd* = object 
+type
+  pollfd* = object
     fd*: cint
     events*: cshort
     revents*: cshort
 
 
-proc poll*(fds: ptr pollfd; nfds: cint; timeout: cint): cint {.cdecl, 
+proc poll*(fds: ptr pollfd; nfds: cint; timeout: cint): cint {.cdecl,
     importc: "nn_poll", dynlib: libnanomsg.}
 
-proc device*(s1: cint; s2: cint): cint {.cdecl, importc: "nn_device", 
+proc device*(s1: cint; s2: cint): cint {.cdecl, importc: "nn_device",
     dynlib: libnanomsg.}
 
 # pipeline.h
 
-const 
+const
   PROTO_PIPELINE* = 5
   PUSH* = (PROTO_PIPELINE * 16 + 0)
   PULL* = (PROTO_PIPELINE * 16 + 1)
 
 # bus.h
 
-const 
+const
   PROTO_BUS* = 7
   BUS* = (PROTO_BUS * 16 + 0)
 
 # inproc.h
 
-const 
+const
   INPROC* = - 1
 
 # ipc.h
 
-const 
+const
   IPC* = - 2
 
 # pair.h
 
-const 
+const
   PROTO_PAIR* = 1
   PAIR* = (PROTO_PAIR * 16 + 0)
 
 # survey.h
 
-const 
+const
   PROTO_SURVEY* = 6
   SURVEYOR* = (PROTO_SURVEY * 16 + 0)
   RESPONDENT* = (PROTO_SURVEY * 16 + 1)
@@ -258,7 +258,7 @@ const
 
 # pubsub.h
 
-const 
+const
   PROTO_PUBSUB* = 2
   PUB* = (PROTO_PUBSUB * 16 + 0)
   SUB* = (PROTO_PUBSUB * 16 + 1)
@@ -267,7 +267,7 @@ const
 
 # reqrep.h
 
-const 
+const
   PROTO_REQREP* = 3
   REQ* = (PROTO_REQREP * 16 + 0)
   REP* = (PROTO_REQREP * 16 + 1)
@@ -275,6 +275,6 @@ const
 
 # tcp.h
 
-const 
+const
   TCP* = - 3
   TCP_NODELAY* = 1
